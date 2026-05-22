@@ -46,7 +46,7 @@ export default function HomePage() {
             <div className="w-8 h-8 rounded-full bg-[var(--color-accent)] flex items-center justify-center">
               <span className="text-xs">✦</span>
             </div>
-            <span className="text-[13px] font-700 tracking-wide text-black/40 uppercase">Alimsa Nail</span>
+            <span className="text-[13px] font-700 tracking-wide text-black/40 uppercase">Nails</span>
           </div>
 
           <h1 className="text-[34px] font-800 leading-tight tracking-tight text-black mb-2">

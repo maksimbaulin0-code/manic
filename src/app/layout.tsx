@@ -3,7 +3,7 @@ import "./globals.css";
 import Navbar from "@/components/Navbar";
 
 export const metadata: Metadata = {
-  title: "Alimsa Nail",
+  title: "Nails",
   description: "Студия маникюра — эстетика в каждой детали",
 };
 
