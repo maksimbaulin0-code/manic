@@ -13,11 +13,32 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const formData = await request.formData();
-    const photoUrl = formData.get('photoUrl') as string;
+    const photo = formData.get('photo') as File;
     const description = formData.get('description') as string;
     
-    if (!photoUrl) return NextResponse.json({ error: "photoUrl required" }, { status: 400 });
+    if (!photo) return NextResponse.json({ error: "photo required" }, { status: 400 });
 
+    const apiKey = process.env.IMGBB_API_KEY;
+    if (!apiKey) return NextResponse.json({ error: "IMGBB_API_KEY is not set" }, { status: 500 });
+
+    const arrayBuffer = await photo.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+    const base64String = buffer.toString('base64');
+
+    const imgbbFormData = new FormData();
+    imgbbFormData.append('image', base64String);
+
+    const res = await fetch(`https://api.imgbb.com/1/upload?key=${apiKey}`, {
+      method: 'POST',
+      body: imgbbFormData,
+    });
+    
+    const data = await res.json();
+    if (!data.success) {
+      throw new Error(data.error?.message || "Upload to ImgBB failed");
+    }
+    
+    const photoUrl = data.data.url;
     const result = await sql`INSERT INTO portfolio (photo_url, description) VALUES (${photoUrl}, ${description || ''}) RETURNING id`;
     return NextResponse.json({ ok: true, id: result.rows[0].id, url: photoUrl });
   } catch (error: any) {
