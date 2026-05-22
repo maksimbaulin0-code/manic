@@ -34,7 +34,6 @@ export default function AdminPage() {
   const [editingName, setEditingName] = useState<Record<number, string>>({});
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState("");
-  const [apiUrl, setApiUrl] = useState("");
 
   // Category form
   const [catName, setCatName] = useState("");
@@ -55,7 +54,6 @@ export default function AdminPage() {
 
   const loadAll = async () => {
     setErr("");
-    if (!apiUrl) { setLoading(false); return; }
     try {
       const [c, s, sl, b, p] = await Promise.all([
         fetchCategories(), fetchServices(), fetchAllSlots(), fetchBookings(), fetchPortfolio(),
@@ -72,16 +70,8 @@ export default function AdminPage() {
   };
 
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      const saved = localStorage.getItem("alimsa_api_url") || DEFAULT_API_URL;
-      setApiUrl(saved);
-    }
+    loadAll().finally(() => setLoading(false));
   }, []);
-
-  useEffect(() => {
-    if (apiUrl) loadAll().finally(() => setLoading(false));
-    else setLoading(false);
-  }, [apiUrl]);
 
   // Category handlers
   const handleAddCat = async () => {
@@ -154,20 +144,7 @@ export default function AdminPage() {
       <h1 className="text-[20px] font-light tracking-wide mb-2">Мастер</h1>
       <p className="text-white/25 text-[12px] mb-6">Управление студией</p>
 
-      {/* API URL */}
-      <div className="card p-4 mb-6">
-        <p className="text-[10px] tracking-wide text-white/25 uppercase mb-2">API URL</p>
-        <div className="flex gap-2 mb-2">
-          <input value={apiUrl} onChange={e => setApiUrl(e.target.value)} placeholder="https://..." className="field text-[12px] !py-2.5" />
-          <button onClick={() => { setApiBase(apiUrl); setErr(""); loadAll(); }} className="btn-book !w-auto !px-3 !py-2.5 text-[12px]">OK</button>
-        </div>
-        {!apiUrl && (
-          <div className="text-[11px] text-white/30 mt-1 space-y-0.5">
-            <p>1. Запустите: ./start.sh</p>
-            <p>2. Вставьте https:// URL из ngrok</p>
-          </div>
-        )}
-      </div>
+
 
       {err && (
         <div className="card p-4 mb-6 border-red-400/20">
@@ -340,7 +317,7 @@ export default function AdminPage() {
                   {portfolio.map((item) => (
                     <div key={item.id} className="card overflow-hidden relative">
                       {item.photo_url ? (
-                        <img src={`${apiUrl}${item.photo_url}`} alt={item.description} className="w-full aspect-square object-cover" />
+                        <img src={item.photo_url} alt={item.description} className="w-full aspect-square object-cover" />
                       ) : (
                         <div className="w-full aspect-square flex items-center justify-center bg-[var(--color-surface-2)]">
                           <span className="text-white/10 text-2xl">◇</span>

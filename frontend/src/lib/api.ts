@@ -1,15 +1,11 @@
-export const DEFAULT_API_URL = "http://localhost:8080";
+export const DEFAULT_API_URL = "";
 
 function getApiBase(): string {
-  if (typeof window === "undefined") return DEFAULT_API_URL;
-  const saved = localStorage.getItem("alimsa_api_url");
-  if (saved) return saved;
-  if (window.location.hostname.includes("ngrok")) return window.location.origin;
-  return DEFAULT_API_URL;
+  return "";
 }
 
 export function setApiBase(url: string) {
-  if (typeof window !== "undefined") localStorage.setItem("alimsa_api_url", url);
+  // Deprecated: API base is now relative
 }
 
 export interface Category {
