@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { fetchCategories, fetchServices } from "@/lib/api";
+import { MOCK_CATEGORIES, MOCK_SERVICES } from "@/lib/mock";
 import Link from "next/link";
 import type { Category, Service } from "@/lib/api";
 
@@ -13,8 +14,14 @@ export default function ServicesPage() {
 
   useEffect(() => {
     Promise.all([fetchCategories(), fetchServices()])
-      .then(([c, s]) => { setCategories(c); setServices(s); })
-      .catch(() => {})
+      .then(([c, s]) => {
+        setCategories(c.length > 0 ? c : MOCK_CATEGORIES);
+        setServices(s.length > 0 ? s : MOCK_SERVICES);
+      })
+      .catch(() => {
+        setCategories(MOCK_CATEGORIES);
+        setServices(MOCK_SERVICES);
+      })
       .finally(() => setLoading(false));
   }, []);
 

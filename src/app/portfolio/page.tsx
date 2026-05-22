@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { fetchPortfolio } from "@/lib/api";
+import { MOCK_PORTFOLIO } from "@/lib/mock";
 import type { PortfolioItem } from "@/lib/api";
 
 const FALLBACK = [
@@ -20,12 +21,9 @@ export default function PortfolioPage() {
   useEffect(() => {
     fetchPortfolio()
       .then((data) => {
-        setItems(
-          data.length > 0
-            ? data
-            : (FALLBACK.map((f) => ({ ...f, photo_url: "" })) as PortfolioItem[])
-        );
+        setItems(data.length > 0 ? data : MOCK_PORTFOLIO);
       })
+      .catch(() => setItems(MOCK_PORTFOLIO))
       .finally(() => setLoading(false));
   }, []);
 

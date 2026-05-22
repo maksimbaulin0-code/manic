@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { initTG } from "@/lib/tg";
 import { fetchCategories, fetchServices } from "@/lib/api";
+import { MOCK_CATEGORIES, MOCK_SERVICES } from "@/lib/mock";
 import Link from "next/link";
 import type { Category, Service } from "@/lib/api";
 
@@ -16,9 +17,12 @@ export default function HomePage() {
       await initTG();
       try {
         const [c, s] = await Promise.all([fetchCategories(), fetchServices()]);
-        setCategories(c);
-        setServices(s);
-      } catch {}
+        setCategories(c.length > 0 ? c : MOCK_CATEGORIES);
+        setServices(s.length > 0 ? s : MOCK_SERVICES);
+      } catch {
+        setCategories(MOCK_CATEGORIES);
+        setServices(MOCK_SERVICES);
+      }
       setLoading(false);
     })();
   }, []);

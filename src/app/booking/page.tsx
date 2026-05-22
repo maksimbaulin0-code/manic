@@ -3,6 +3,7 @@
 import { useEffect, useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { fetchServices, fetchSlots, createBooking, uploadFile } from "@/lib/api";
+import { MOCK_SERVICES, MOCK_SLOTS } from "@/lib/mock";
 import { getTGUser } from "@/lib/tg";
 import type { Service, Slot } from "@/lib/api";
 
@@ -37,23 +38,29 @@ function BookingContent() {
   useEffect(() => {
     fetchServices()
       .then((svcs) => {
-        setServices(svcs);
+        const list = svcs.length > 0 ? svcs : MOCK_SERVICES;
+        setServices(list);
         if (preselected) {
-          const found = svcs.find((s) => s.id === Number(preselected));
+          const found = list.find((s) => s.id === Number(preselected));
           if (found) {
             setSel(found);
             setStep("slot");
-            fetchSlots().then(setSlots);
+            fetchSlots().then((sl) => setSlots(sl.length > 0 ? sl : MOCK_SLOTS));
           }
         }
       })
-      .catch(() => setErr("Не удалось загрузить услуги"))
+      .catch(() => {
+        setServices(MOCK_SERVICES);
+        setErr("");
+      })
       .finally(() => setLoading(false));
   }, [preselected]);
 
   useEffect(() => {
     if (sel && !preselected) {
-      fetchSlots().then(setSlots).catch(() => setErr("Не удалось загрузить слоты"));
+      fetchSlots()
+        .then((sl) => setSlots(sl.length > 0 ? sl : MOCK_SLOTS))
+        .catch(() => setSlots(MOCK_SLOTS));
     }
   }, [sel]);
 
