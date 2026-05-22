@@ -30,70 +30,110 @@ export default function HomePage() {
   };
 
   return (
-    <div className="pb-24">
-      <div className="px-5 pt-6 pb-12">
-        <div className="flex items-center gap-3 mb-6">
-          <div className="w-px h-8 bg-white/10" />
-          <div>
-            <h1 className="text-[26px] font-light tracking-[0.18em] uppercase">Alimsa</h1>
-            <p className="text-white/25 text-[10px] tracking-[0.5em] uppercase mt-1">nail studio</p>
+    <div className="pb-28">
+      {/* HERO */}
+      <div className="relative bg-white rounded-b-[36px] px-5 pt-10 pb-8 mb-5 shadow-sm overflow-hidden">
+        {/* Decorative blob */}
+        <div className="absolute -top-10 -right-10 w-48 h-48 rounded-full bg-[var(--color-accent)] opacity-20 blur-3xl pointer-events-none" />
+        <div className="absolute -bottom-8 -left-8 w-36 h-36 rounded-full bg-purple-300 opacity-15 blur-2xl pointer-events-none" />
+
+        <div className="relative z-10">
+          <div className="flex items-center gap-2 mb-6">
+            <div className="w-8 h-8 rounded-full bg-[var(--color-accent)] flex items-center justify-center">
+              <span className="text-xs">✦</span>
+            </div>
+            <span className="text-[13px] font-700 tracking-wide text-black/40 uppercase">Alimsa Nail</span>
           </div>
+
+          <h1 className="text-[34px] font-800 leading-tight tracking-tight text-black mb-2">
+            Маникюр<br />в Москве
+          </h1>
+          <p className="text-[14px] text-black/40 mb-8 leading-relaxed max-w-[240px]">
+            Запись онлайн — выбери услугу и свободное время
+          </p>
+
+          <Link href="/booking" className="block">
+            <button className="btn-book">Записаться →</button>
+          </Link>
+          <Link href="/services" className="block mt-3">
+            <button className="btn-ghost">Посмотреть прайс</button>
+          </Link>
         </div>
-        <p className="text-white/40 text-[13px] leading-relaxed max-w-[280px]">Маникюр и наращивание в Москве</p>
       </div>
 
+      {/* CATEGORIES */}
+      <div className="px-5 mb-5">
+        <p className="section-label mb-4">Категории</p>
+        <div className="grid grid-cols-3 gap-3">
+          {loading
+            ? [1, 2, 3].map((i) => (
+                <div key={i} className="card p-4 h-24 animate-pulse bg-white/80" />
+              ))
+            : categories.map((cat) => {
+                const minPrice = getMinPrice(cat.id);
+                return (
+                  <Link href="/services" key={cat.id}>
+                    <div className="card p-4 text-center active:scale-95 transition-transform duration-150">
+                      <span className="text-2xl block mb-2">{cat.icon}</span>
+                      <p className="text-[12px] font-700 text-black leading-tight">{cat.name}</p>
+                      {minPrice && (
+                        <p className="text-[11px] text-black/35 mt-1 font-500">
+                          от {minPrice.toLocaleString()}₽
+                        </p>
+                      )}
+                    </div>
+                  </Link>
+                );
+              })}
+        </div>
+      </div>
+
+      {/* PRICE LIST */}
       <div className="px-5">
-        <Link href="/booking" className="block">
-          <button className="btn-book">Записаться</button>
-        </Link>
-        <Link href="/services" className="block mt-3 mb-6">
-          <button className="btn-ghost text-white/40">Посмотреть прайс →</button>
-        </Link>
-
-        <div className="sep my-10" />
-
-        <div className="grid grid-cols-3 gap-2 mb-10">
-          {categories.map((cat) => {
-            const minPrice = getMinPrice(cat.id);
-            return (
-              <Link href="/services" key={cat.id}>
-                <div className="card p-4 text-center">
-                  <span className="text-lg block mb-1.5 opacity-50">{cat.icon}</span>
-                  <span className="text-[11px] text-white/50">{cat.name}</span>
-                  <span className="text-[10px] text-white/20 block mt-0.5">
-                    {minPrice ? `от ${minPrice.toLocaleString()}₽` : "—"}
-                  </span>
-                </div>
-              </Link>
-            );
-          })}
+        <div className="flex items-center justify-between mb-4">
+          <p className="section-label">Прайс-лист</p>
+          <Link href="/services">
+            <span className="text-[12px] font-600 text-black/40">Все →</span>
+          </Link>
         </div>
 
-        <div className="sep mb-10" />
-
         {loading ? (
-          <div className="space-y-2">
-            {[1, 2, 3].map((i) => <div key={i} className="h-12 bg-white/[0.02] rounded-xl animate-pulse" />)}
+          <div className="card p-4 space-y-3">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="h-10 bg-black/[0.04] rounded-xl animate-pulse" />
+            ))}
           </div>
         ) : (
-          <div>
-            <p className="text-[11px] tracking-[0.15em] uppercase text-white/25 mb-5">Прайс-лист</p>
-            {categories.map((cat) => (
-              <div key={cat.id} className="mb-8">
-                <div className="flex items-center gap-2 mb-3">
-                  <span className="text-white/30 text-xs">{cat.icon}</span>
-                  <span className="text-[11px] tracking-wide text-white/25 uppercase">{cat.name}</span>
-                </div>
-                <div className="space-y-0">
-                  {services.filter((s) => s.category_id === cat.id).map((svc, i, arr) => (
-                    <div key={svc.id} className={`flex justify-between items-center py-3.5 ${i < arr.length - 1 ? "border-b border-white/[0.03]" : ""}`}>
-                      <span className="text-[13px] text-white/60">{svc.name}</span>
-                      <span className="price text-white/70">{svc.price.toLocaleString()}₽</span>
-                    </div>
+          <div className="card overflow-hidden">
+            {categories.map((cat) => {
+              const catServices = services.filter((s) => s.category_id === cat.id);
+              if (catServices.length === 0) return null;
+              return (
+                <div key={cat.id}>
+                  <div className="px-5 py-3 bg-[var(--color-surface-2)]">
+                    <p className="text-[11px] font-700 text-black/40 uppercase tracking-widest">
+                      {cat.icon} {cat.name}
+                    </p>
+                  </div>
+                  {catServices.map((svc, i, arr) => (
+                    <Link href={`/booking?service=${svc.id}`} key={svc.id}>
+                      <div className={`flex justify-between items-center px-5 py-4 active:bg-[var(--color-surface-2)] ${i < arr.length - 1 ? "border-b border-black/[0.05]" : ""}`}>
+                        <span className="text-[14px] font-500 text-black">{svc.name}</span>
+                        <div className="flex items-center gap-2">
+                          <span className="price">{svc.price.toLocaleString()}₽</span>
+                          <span className="text-black/20 text-sm">›</span>
+                        </div>
+                      </div>
+                    </Link>
                   ))}
                 </div>
+              );
+            })}
+            {categories.length === 0 && (
+              <div className="py-12 text-center px-5">
+                <p className="text-black/25 text-sm">Прайс пока не заполнен</p>
               </div>
-            ))}
+            )}
           </div>
         )}
       </div>
