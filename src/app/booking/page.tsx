@@ -45,13 +45,22 @@ function BookingContent() {
           if (found) {
             setSel(found);
             setStep("slot");
-            fetchSlots().then((sl) => setSlots(sl.length > 0 ? sl : MOCK_SLOTS));
+            fetchSlots().then((sl) => setSlots(sl.length > 0 ? sl : MOCK_SLOTS)).catch(() => setSlots(MOCK_SLOTS));
           }
         }
       })
       .catch(() => {
-        setServices(MOCK_SERVICES);
+        const list = MOCK_SERVICES;
+        setServices(list);
         setErr("");
+        if (preselected) {
+          const found = list.find((s) => s.id === Number(preselected));
+          if (found) {
+            setSel(found);
+            setStep("slot");
+            fetchSlots().then((sl) => setSlots(sl.length > 0 ? sl : MOCK_SLOTS)).catch(() => setSlots(MOCK_SLOTS));
+          }
+        }
       })
       .finally(() => setLoading(false));
   }, [preselected]);
