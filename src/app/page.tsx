@@ -76,7 +76,7 @@ export default function HomePage() {
             : categories.map((cat) => {
                 const minPrice = getMinPrice(cat.id);
                 return (
-                  <Link href="/services" key={cat.id}>
+                  <Link href={`/services?category=${cat.id}`} key={cat.id}>
                     <div className="card p-4 text-center active:scale-95 transition-transform duration-150">
                       <span className="text-2xl block mb-2">{cat.icon}</span>
                       <p className="text-[12px] font-700 text-black leading-tight">{cat.name}</p>

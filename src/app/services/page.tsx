@@ -1,16 +1,26 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { fetchCategories, fetchServices } from "@/lib/api";
 import { MOCK_CATEGORIES, MOCK_SERVICES } from "@/lib/mock";
 import Link from "next/link";
 import type { Category, Service } from "@/lib/api";
 
-export default function ServicesPage() {
+function ServicesContent() {
+  const searchParams = useSearchParams();
+  const initialCategory = searchParams.get("category");
+
   const [categories, setCategories] = useState<Category[]>([]);
   const [services, setServices] = useState<Service[]>([]);
   const [active, setActive] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (initialCategory) {
+      setActive(Number(initialCategory));
+    }
+  }, [initialCategory]);
 
   useEffect(() => {
     Promise.all([fetchCategories(), fetchServices()])
@@ -114,5 +124,29 @@ export default function ServicesPage() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function ServicesPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="pb-28">
+          <div className="bg-white px-5 pt-10 pb-6 rounded-b-[32px] shadow-sm mb-5">
+            <h1 className="text-[28px] font-800 tracking-tight mb-1">Прайс</h1>
+            <p className="text-[14px] text-black/40 mb-5">Загрузка...</p>
+          </div>
+          <div className="px-5">
+            <div className="card overflow-hidden">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="h-16 border-b border-black/[0.05] animate-pulse bg-black/[0.02] last:border-0" />
+              ))}
+            </div>
+          </div>
+        </div>
+      }
+    >
+      <ServicesContent />
+    </Suspense>
   );
 }
